@@ -41,7 +41,7 @@
     })
 </script>
 <script>
-    console.log(window.location);
+
     const websocket_url = 'ws://'+window.location.host+'/ws/chat/messageRoom';
     const socket = new WebSocket(websocket_url);
 
@@ -49,7 +49,19 @@
         console.log('open',e)
     };
     socket.onmessage= function(e){
-        console.log('message',e.data);
+        const cname = JSON.parse(e.data);
+        if(cname.curr_channel !== ''){
+            localStorage.setItem("myChannel",cname.curr_channel);
+        }
+        if(cname.mychannel !== ''){
+            console.log('msg_channel:',cname.mychannel);
+            console.log('stored_channel:',localStorage.getItem("myChannel"));
+
+            {#if(cname.mychannel !== window.myChannel){#}
+            {#    console.log(cname.chat)#}
+            {#}#}
+        }
+
     };
     socket.onclose= function(e){
         console.log('close',e)
@@ -57,7 +69,6 @@
     socket.onerror= function(e){
         console.log('error',e)
     };
-    
     function sendMsg() {
         socket.send(JSON.stringify({
             'msg':$('#msg').val(),
